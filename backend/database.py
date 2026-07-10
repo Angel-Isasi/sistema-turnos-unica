@@ -12,7 +12,15 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 # conexiones inactivas y sin esto aparecen errores "MySQL server has gone
 # away" después de un rato sin tráfico.
 # pool_recycle: además renueva cualquier conexión con más de 5 min de vida.
-engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_recycle=300)
+# connect_timeout: si el host no responde, falla en 10s en vez de colgarse
+# (sin esto, un problema de red deja el arranque esperando indefinidamente
+# hasta que Railway lo mata por healthcheck, minutos después).
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=300,
+    connect_args={"connect_timeout": 10},
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
