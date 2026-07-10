@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from database import Base
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from tiempo import ahora_utc
 
 
 class Usuario(Base):
@@ -10,9 +9,9 @@ class Usuario(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
-    password = Column(String(255), nullable=False)
-    rol = Column(String(20), nullable=False)
-    creado_en = Column(DateTime, default=datetime.utcnow)
+    password = Column(String(255), nullable=False)  # hash bcrypt, nunca texto plano
+    rol = Column(String(20), nullable=False)  # "alumno" | "administrativo"
+    creado_en = Column(DateTime, default=ahora_utc)
 
 
 class Servicio(Base):
@@ -21,6 +20,10 @@ class Servicio(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String(100), nullable=False)
     activo = Column(Boolean, default=True)
+    # Letra con la que se numeran los turnos del servicio: "M" -> M-031
+    prefijo = Column(String(5), nullable=True)
+    descripcion = Column(String(255), nullable=True)
+    ventanilla = Column(String(50), nullable=True)
 
 
 class Turno(Base):
@@ -28,9 +31,10 @@ class Turno(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     numero = Column(String(20), nullable=False)
-    estado = Column(String(20), default="creado")
+    # Ciclo de vida: encola -> llamado -> atendido | cancelado
+    estado = Column(String(20), default="encola")
     prioridad = Column(String(20), default="normal")
-    creado_en = Column(DateTime, default=datetime.utcnow)
+    creado_en = Column(DateTime, default=ahora_utc)
 
     usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
     servicio_id = Column(Integer, ForeignKey("servicios.id"), nullable=False)
@@ -42,9 +46,9 @@ class Atencion(Base):
     id = Column(Integer, primary_key=True, index=True)
     turno_id = Column(Integer, ForeignKey("turnos.id"), nullable=False)
     operador_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
-    inicio = Column(DateTime, default=datetime.utcnow)
+    inicio = Column(DateTime, default=ahora_utc)
     fin = Column(DateTime, nullable=True)
-    observacion = Column(String(255), nullable=True)
+    observacion = Column(String(255), nullable=True)  # ej. "Ventanilla 3"
 
 
 class Auditoria(Base):
@@ -53,6 +57,8 @@ class Auditoria(Base):
     id = Column(Integer, primary_key=True, index=True)
     usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
     accion = Column(String(50), nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=ahora_utc)
     ip_host = Column(String(100), nullable=True)
-    resultado = Column(String(10), nullable=False)
+    resultado = Column(String(10), nullable=False)  # "ok" | "error"
+    turno_numero = Column(String(20), nullable=True)  # ej. "M-031"
+    detalle = Column(String(255), nullable=True)
