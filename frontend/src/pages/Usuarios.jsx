@@ -74,9 +74,9 @@ export default function Usuarios() {
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-10">
+      <div className="grid lg:grid-cols-3 gap-10 min-w-0">
         {/* Formulario de alta */}
-        <form onSubmit={crearUsuario} className="bg-white border border-brand/15 rounded-lg p-6 space-y-4 self-start">
+        <form onSubmit={crearUsuario} className="bg-white border border-brand/15 rounded-lg p-6 space-y-4 self-start min-w-0">
           <h2 className="text-text-dark font-semibold">Nueva cuenta</h2>
 
           {errorForm && (
@@ -152,7 +152,7 @@ export default function Usuarios() {
         </form>
 
         {/* Lista de cuentas */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 min-w-0">
           <div className="flex items-baseline justify-between mb-3">
             <h2 className="text-text-dark font-semibold">Cuentas existentes</h2>
             {usuarios !== null && (
