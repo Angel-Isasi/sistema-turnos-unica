@@ -1,8 +1,11 @@
+import { useNavigate } from "react-router-dom"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 
 export default function Login() {
+  const navigate = useNavigate()
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Capa de fondo: el degradado, desenfocado solo donde corresponde */}
@@ -77,7 +80,10 @@ export default function Login() {
               />
             </div>
 
-            <Button className="bg-brand hover:bg-brand/90 w-full mt-4">
+            <Button
+              onClick={() => navigate("/turnos")}
+              className="bg-brand hover:bg-brand/90 w-full mt-4"
+            >
               Ingresar
             </Button>
           </div>
